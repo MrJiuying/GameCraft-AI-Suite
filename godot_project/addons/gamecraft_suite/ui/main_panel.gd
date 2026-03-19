@@ -86,8 +86,9 @@ func _on_http_request_completed(_result, response_code, _headers, body):
 		else:
 			output_label.text = "❌ 编译失败，状态码: " + str(response_code) + "\n" + response_text
 
-# ================= 阶段三：资产具现化 =================
+# ================= 阶段三：资产具现化 (V2.0 可视化升级版) =================
 func _on_build_pressed():
+	# 1. 获取 JSON 数据并校验
 	var json_text = output_label.text
 	if json_text == "" or json_text.begins_with("❌") or json_text.begins_with("⚠️") or json_text.begins_with("正在"):
 		output_label.text = "⚠️ 请先成功编译蓝图！"
@@ -98,49 +99,148 @@ func _on_build_pressed():
 		output_label.text = "❌ 蓝图格式错误！"
 		return
 		
-	build_btn.text = "🧱 正在自动构建游戏资产..."
+	build_btn.text = "🧱 正在自动构建 2.0 可视化资产..."
 	build_btn.disabled = true
 	
 	var target_dir = "res://CoreSystems"
 	if not DirAccess.dir_exists_absolute(target_dir):
 		DirAccess.make_dir_absolute(target_dir)
 	
-	# 保存蓝图
+	# 2. 保存蓝图文件
 	var json_file = FileAccess.open(target_dir + "/blueprint.json", FileAccess.WRITE)
 	if json_file:
 		json_file.store_string(json_text)
 		json_file.close()
 
-	# 生成脚本
-	var script_code = "extends Node2D\n\n# 🤖 AI 自动生成脚本\n\n"
+	# ==========================================
+	# 3. 生成脚本 (GameManager.gd) - 🤖 V2.2 动态逻辑版
+	# ==========================================
+	var script_code = "extends Node2D\n\n# 🤖 AI V2.2 自动生成脚本\n\n"
 	if data.has("RequiredVariables"):
 		for v in data["RequiredVariables"].keys():
 			var safe_val = JSON.stringify(data["RequiredVariables"][v])
 			var safe_var_name = str(v).replace(" ", "_")
 			script_code += "var " + safe_var_name + " = " + safe_val + "\n"
 	
-	script_code += "\nfunc _ready():\n"
-	script_code += "\tprint(\"✅ " + str(data.get("GameName", "游戏")) + " 场景已加载！\")\n"
+	script_code += "\n@onready var ui_layout = $UILayer/UILayout\n"
 	
+	script_code += "\nfunc _ready():\n"
+	script_code += "\tprint(\"✅ " + str(data.get("GameName", "游戏")) + " V2.2 场景已加载！\")\n"
+	
+	if data.has("RequiredUI"):
+		for ui in data["RequiredUI"]:
+			if ui.get("NodeType") == "Button":
+				var node_name = str(ui.get("NodeName")).replace(" ", "_")
+				script_code += "\tui_layout.get_node(\"" + node_name + "\").pressed.connect(_on_" + node_name + "_pressed)\n"
+
+	script_code += "\nfunc _process(delta):\n"
+	if data.has("RequiredUI"):
+		for ui in data["RequiredUI"]:
+			var node_name = str(ui.get("NodeName")).replace(" ", "_")
+			var bind_var = str(ui.get("BindVariable", "")).replace(" ", "_")
+			if bind_var != "":
+				if ui.get("NodeType") == "Label":
+					script_code += "\tui_layout.get_node(\"" + node_name + "\").text = \"" + ui.get("Text") + ": \" + str(" + bind_var + ")\n"
+				elif ui.get("NodeType") == "ProgressBar":
+					script_code += "\tui_layout.get_node(\"" + node_name + "\").value = " + bind_var + "\n"
+
+	# --- ⚠️ 核心修复区：确保按钮点击逻辑只生成一次 ---
+	if data.has("RequiredUI"):
+		for ui in data["RequiredUI"]:
+			if ui.get("NodeType") == "Button":
+				var node_name = str(ui.get("NodeName")).replace(" ", "_")
+				script_code += "\nfunc _on_" + node_name + "_pressed():\n"
+				script_code += "\tprint(\"触发动作: " + node_name + "\")\n"
+				
+				# 读取 AI 动态生成的 OnClick 字典
+				if ui.has("OnClick") and typeof(ui["OnClick"]) == TYPE_DICTIONARY:
+					var clicks = ui["OnClick"]
+					for var_name in clicks.keys():
+						var safe_var = str(var_name).replace(" ", "_")
+						var change_val = str(clicks[var_name]).replace("%", "")
+						script_code += "\t" + safe_var + " += (" + change_val + ")\n"
+				else:
+					script_code += "\tpass # AI 未配置数值逻辑\n"
+	
+	# 保存生成的 GameManager.gd
 	var gd_file_path = target_dir + "/GameManager.gd"
 	var gd_file = FileAccess.open(gd_file_path, FileAccess.WRITE)
 	gd_file.store_string(script_code)
 	gd_file.close()
 
-	# 生成场景
+	# 4. 生成场景并自动拼装 UI (V2.0 核心逻辑)
 	var tscn_path = target_dir + "/MainGame.tscn"
 	var tscn_code = "[gd_scene load_steps=2 format=3]\n\n"
 	tscn_code += "[ext_resource type=\"Script\" path=\"" + gd_file_path + "\" id=\"1_script\"]\n\n"
 	tscn_code += "[node name=\"MainGame\" type=\"Node2D\"]\n"
-	tscn_code += "script = ExtResource(\"1_script\")\n"
+	tscn_code += "script = ExtResource(\"1_script\")\n\n"
+	
+	# 自动创建 UI 画布层
+	tscn_code += "[node name=\"UILayer\" type=\"CanvasLayer\" parent=\".\"]\n\n"
+	
+	# 自动创建垂直排版容器
+	tscn_code += "[node name=\"UILayout\" type=\"VBoxContainer\" parent=\"UILayer\"]\n"
+	tscn_code += "offset_left = 30.0\n"
+	tscn_code += "offset_top = 30.0\n"
+	tscn_code += "offset_right = 350.0\n"
+	tscn_code += "offset_bottom = 500.0\n"
+	tscn_code += "theme_override_constants/separation = 15\n\n"
+	
+	# 动态解析蓝图中的 UI 需求并生成控件
+	if data.has("RequiredUI"):
+		for ui_info in data["RequiredUI"]:
+			var node_name = str(ui_info.get("NodeName", "Node")).replace(" ", "_").replace("-", "_")
+			var node_type = ui_info.get("NodeType", "Label")
+			var text = ui_info.get("Text", "")
+			
+			tscn_code += "[node name=\"" + node_name + "\" type=\"" + node_type + "\" parent=\"UILayer/UILayout\"]\n"
+			tscn_code += "layout_mode = 2\n"
+			
+			if node_type == "Label" or node_type == "Button":
+				tscn_code += "text = \"" + text + "\"\n"
+			elif node_type == "ProgressBar":
+				tscn_code += "value = 100.0\n"
+			tscn_code += "\n"
 	
 	var tscn_file = FileAccess.open(tscn_path, FileAccess.WRITE)
 	tscn_file.store_string(tscn_code)
 	tscn_file.close()
 	
+	# 刷新编辑器文件系统
 	if Engine.is_editor_hint():
 		EditorInterface.get_resource_filesystem().scan()
 	
-	output_label.text = "🎉 具现化全流程完成！(文件已在 res://CoreSystems 目录生成)"
+	output_label.text = "🎉 V2.0 具现化完成！请双击 MainGame.tscn 查看效果！"
 	build_btn.text = "✨ 具现化蓝图 (自动生成脚本与节点)"
 	build_btn.disabled = false
+	
+	
+	
+# ================= 极客功能：JSON 蓝图直接具现化 =================
+
+# 1. 允许放置 (控制台疯狂刷屏说明这步 OK 了)
+func _can_drop_data(_at_position, data):
+	return typeof(data) == TYPE_DICTIONARY and data.get("type") == "files"
+
+# 2. 执行放置 (松手瞬间触发)
+func _drop_data(_at_position, data):
+	var files = data.get("files", [])
+	if files.size() > 0:
+		var path = files[0]
+		print("🚀 [系统] 捕获到松手动作，准备处理文件: ", path)
+		
+		var file = FileAccess.open(path, FileAccess.READ)
+		if not file:
+			print("❌ [错误] 无法读取文件: ", path)
+			return
+			
+		var content = file.get_as_text()
+		file.close()
+		
+		if path.get_extension().to_lower() == "json":
+			print("📦 [系统] 检测到 JSON 蓝图，准备自动具现化...")
+			output_label.text = content # 填充中间黑框
+			_on_build_pressed() # 👈 关键：直接触发你的生成按钮逻辑
+		else:
+			print("📝 [系统] 检测到文本文件，填充输入框")
+			input_edit.text = content

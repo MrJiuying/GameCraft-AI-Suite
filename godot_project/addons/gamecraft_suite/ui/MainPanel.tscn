@@ -27,6 +27,9 @@ text = "🧠 GameCraft 宏观大脑"
 [node name="ChatHistory" type="RichTextLabel" parent="VBoxContainer" unique_id=1047985994]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
+mouse_filter = 1
+text = "🤖 [主策划]：你好！我是 GameCraft 首席策划。请用一句话告诉我你想做个什么游戏？
+"
 
 [node name="InputEdit" type="TextEdit" parent="VBoxContainer" unique_id=1630025754]
 custom_minimum_size = Vector2(0, 80)
@@ -55,5 +58,6 @@ text = "✨ 具现化蓝图 (自动生成脚本与节点)"
 [node name="OutputLabel" type="TextEdit" parent="VBoxContainer" unique_id=1965778071]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 1
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=911108112]

@@ -83,26 +83,38 @@ def chat_with_creator(chat_history: list):
     return reply
 
 # ==========================================
-# 3. 阶段二：编译蓝图 (杠精 + 架构师)
+# 3. 阶段二：编译蓝图 (杠精 + 架构师 V2.2 动态逻辑版)
 # ==========================================
 def compile_blueprint(chat_history: list):
-    print("\n🚀 开始锁定创意，准备编译蓝图...")
+    print("\n🚀 开始锁定创意，准备编译 V2.2 动态逻辑蓝图...")
     
-    # 1. 整理对话上下文，让后面的 Agent 知道你们聊了啥
     context = "\n".join([f"[{m['role']}]: {m['content']}" for m in chat_history])
     
-    # 2. 逻辑杠精出场
-    print("🕵️‍♂️ 逻辑杠精正在审阅聊天记录，修补漏洞...")
-    critic_sys = "你是一个严苛的数值策划。请阅读以下探讨记录，找出逻辑漏洞，并给出修正后的完整游戏机制设定（不需要抛出问题，直接给出最终设定结论）。"
+    print("🕵️‍♂️ 逻辑杠精正在审阅聊天记录，规划数值与 UI 布局...")
+    critic_sys = (
+        "你是一个严苛的数值与系统策划。请阅读以下探讨记录，找出逻辑漏洞，并给出修正后的完整游戏设定。"
+        "【注意】设定中必须明确指出需要哪些核心变量（如金钱、体力），以及对应需要哪些 UI 控件（标签、进度条、按钮）。"
+        "【核心要求】对于每一个按钮，必须明确设计它点击后的数值变化逻辑（例如：消耗多少体力，增加多少金钱），确保数值平衡。"
+        "直接给出最终设定结论，不要废话。"
+    )
     refined = ask_ai(critic_sys, f"【讨论记录】:\n{context}", temperature=0.3)
     
-    # 3. 架构总工出场
-    print("👷 架构总工正在将其转化为 JSON...")
-    architect_sys = "将以下完整设定转化为纯 JSON 蓝图。格式必须包含: {\"GameName\":\"\", \"CoreSystems\":[{\"SystemName\":\"\", \"Components\":[{\"ComponentName\":\"\", \"Description\":\"\"}]}], \"RequiredVariables\":{}}。只输出JSON，绝对不要任何Markdown标记。"
+    print("👷 架构总工正在生成带 OnClick 动态逻辑的 JSON 蓝图...")
+    # ⚠️ 下面是这次升级的核心：在 JSON 模板中加入了 OnClick 字段
+    architect_sys = (
+        "将以下完整设定转化为纯 JSON 蓝图。格式必须严格包含以下键值："
+        "{\"GameName\":\"\", "
+        "\"RequiredVariables\":{\"变量名\": 初始值(浮点数)}, "
+        "\"RequiredUI\":[{\"NodeName\":\"节点名称(英文字母)\", \"NodeType\":\"Label或ProgressBar或Button\", \"BindVariable\":\"绑定的变量名(按钮留空)\", \"Text\":\"默认文本\", \"OnClick\": {\"变量名\": \"变化值(如 '+50' 或 '-10')\"}}], "
+        "\"CoreSystems\":[{\"SystemName\":\"\", \"Components\":[{\"ComponentName\":\"\", \"Description\":\"\"}]}]}。"
+        "【重要规则】：只有 NodeType 为 Button 时才需要 OnClick 字典，表示点击该按钮后对变量的增减。变化值必须是带正负号的字符串。"
+        "只输出JSON，绝对不要任何Markdown标记（如 ```json 等），确保格式合法。"
+    )
     final_json = ask_ai(architect_sys, refined, temperature=0.1)
     
+    import re
     match = re.search(r'\{.*\}', final_json, re.DOTALL)
     result = match.group(0) if match else final_json.strip()
     
-    print("✅ 蓝图编译大功告成！")
+    print("✅ V2.2 动态蓝图编译大功告成！")
     return result
