@@ -1,0 +1,135 @@
+{
+	"CoreSystems": [
+		{
+			"Components": [
+				{
+					"ComponentName": "金钱",
+					"Description": "初始1700.44元，精确到分位计算"
+				},
+				{
+					"ComponentName": "体力值",
+					"Description": "0-100，工作、探索消耗，睡眠恢复"
+				},
+				{
+					"ComponentName": "健康值",
+					"Description": "0-100，受居住环境、饮食质量、医疗条件影响"
+				},
+				{
+					"ComponentName": "情绪值",
+					"Description": "0-100，影响决策成功率与部分事件触发"
+				}
+			],
+			"SystemName": "基础资源"
+		},
+		{
+			"Components": [
+				{
+					"ComponentName": "食物消耗",
+					"Description": "最低15元/日（泡面标准），营养值影响健康衰减速度"
+				},
+				{
+					"ComponentName": "居住消耗",
+					"Description": "桥洞（0元，健康-3/日）、胶囊旅馆（50元）、出租屋（100元）"
+				},
+				{
+					"ComponentName": "健康维护",
+					"Description": "生病时医疗费50-200元不等"
+				}
+			],
+			"SystemName": "每日强制消耗"
+		},
+		{
+			"Components": [
+				{
+					"ComponentName": "AI任务",
+					"Description": "主要收入来源，分为日结零工（100-300元，基础风险）、中短期委托（500-1500元，中等风险）、特殊机遇（2000+元，高风险高回报）"
+				},
+				{
+					"ComponentName": "探索收益",
+					"Description": "捡拾废品（5-30元/次）、偶然发现"
+				},
+				{
+					"ComponentName": "风险机制",
+					"Description": "所有工作有概率遭遇克扣工资、诈骗、意外伤害"
+				}
+			],
+			"SystemName": "收入与工作系统"
+		},
+		{
+			"Components": [
+				{
+					"ComponentName": "基础设定",
+					"Description": "绝对中立的信息贩子，合成音带微妙人格，交互方式为仿手机聊天界面"
+				},
+				{
+					"ComponentName": "收费模式",
+					"Description": "基础任务发布免费；关键信息解锁50-500元不等；数据分析服务100-1000元"
+				},
+				{
+					"ComponentName": "人格化设计",
+					"Description": "语气冷静机械，偶尔流露讽刺性评价；当玩家连续做出高风险选择时，会提示生存概率；后期可能出现“异常对话”"
+				}
+			],
+			"SystemName": "AI助手系统"
+		},
+		{
+			"Components": [
+				{
+					"ComponentName": "碎片获取途径",
+					"Description": "AI任务附加信息、环境调查、NPC对话残片、数字线索（如1700.44、4417）"
+				},
+				{
+					"ComponentName": "拼图进度与真相解锁",
+					"Description": "第一阶段：察觉“世界不对劲”；第二阶段：发现“棱镜科技”与实验协议；第三阶段：理解世界本质（AI社会实验场或数据深渊边缘区）"
+				}
+			],
+			"SystemName": "信息拼图解谜系统"
+		},
+		{
+			"Components": [
+				{
+					"ComponentName": "明面结局",
+					"Description": "结局A：30天内攒够5000元购买车票；结局B：金钱归零且健康值低于20持续3天；结局C：60天内拥有稳定住所（月租≤800）、存款≥3000、健康≥70"
+				},
+				{
+					"ComponentName": "隐藏结局",
+					"Description": "结局D：收集≥80%信息碎片后，发现“重置协议”并选择关闭AI系统、接管部分权限或清醒地留在循环中"
+				}
+			],
+			"SystemName": "结局触发条件"
+		},
+		{
+			"Components": [
+				{
+					"ComponentName": "事件类型与权重",
+					"Description": "日常事件（70%）：工作机会、物价波动、健康问题、随机开销；戏剧转折事件（30%）：机遇类、危机类、线索类"
+				},
+				{
+					"ComponentName": "事件触发逻辑",
+					"Description": "基于玩家属性状态动态调整；关键转折事件在特定时间点或属性阈值触发；多周目设计：部分事件仅在特定结局路线后解锁"
+				}
+			],
+			"SystemName": "事件系统设计"
+		},
+		{
+			"Components": [
+				{
+					"ComponentName": "生存压力曲线",
+					"Description": "第一周（适应期）：每日净消耗约80-120元；第二至四周（挣扎期）：事件复杂度增加；四周后（转折期）：要么陷入生存危机，要么抓住机遇翻身"
+				},
+				{
+					"ComponentName": "关键数值节点",
+					"Description": "健康警戒线：低于40时生病概率大增；情绪崩溃点：低于30时可能做出非理性决策；资金安全线：保持≥500元以应对突发状况"
+				}
+			],
+			"SystemName": "数值平衡要点"
+		}
+	],
+	"GameName": "金陵求生记",
+	"RequiredVariables": {
+		"体力值": 100.0,
+		"健康值": 100.0,
+		"情绪值": 100.0,
+		"金钱": 1700.44
+	}
+}

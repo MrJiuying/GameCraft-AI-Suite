@@ -47,3 +47,10 @@ Thumbs.db
 *.log
 backend/output_godot/
 godot_plugin/output/
+
+
+# Godot 缓存
+godot_project/.godot/
+godot_project/*.import
+godot_project/export_presets.cfg
+godot_project/*.translation

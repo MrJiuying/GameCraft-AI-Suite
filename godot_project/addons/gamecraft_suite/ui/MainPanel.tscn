@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://b8ux2b5edm8ph"]
+
+[ext_resource type="Script" uid="uid://c1w8n06yviopp" path="res://addons/gamecraft_suite/ui/main_panel.gd" id="1_ychak"]
+
+[node name="MainPanel" type="Control" unique_id=1499501141]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ychak")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=368563002]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=1571786700]
+layout_mode = 2
+text = "🧠 GameCraft 宏观大脑"
+
+[node name="ChatHistory" type="RichTextLabel" parent="VBoxContainer" unique_id=1047985994]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="InputEdit" type="TextEdit" parent="VBoxContainer" unique_id=1630025754]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+placeholder_text = "在这里输入你的游戏点子..."
+
+[node name="ButtonRow" type="HBoxContainer" parent="VBoxContainer" unique_id=1331108424]
+layout_mode = 2
+
+[node name="ChatBtn" type="Button" parent="VBoxContainer/ButtonRow" unique_id=434565791]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "💬 发送讨论"
+
+[node name="CompileBtn" type="Button" parent="VBoxContainer/ButtonRow" unique_id=273118207]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "✨ 敲定创意并编译蓝图"
+
+[node name="BuildBtn" type="Button" parent="VBoxContainer" unique_id=463304379]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "✨ 具现化蓝图 (自动生成脚本与节点)"
+
+[node name="OutputLabel" type="TextEdit" parent="VBoxContainer" unique_id=1965778071]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=911108112]
