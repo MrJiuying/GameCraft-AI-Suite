@@ -1,4 +1,8 @@
-🛠️ GameCraft AI Suite (V0.0.1)
+🛠️ GameCraft AI Suite
+Version: V0.0.1-Alpha
+
+"让 AI 成为你的游戏副驾，而非外包。" —— 由 MrJiuying 与 Gemini 联手打造。
+
 GameCraft AI Suite 是一款专为 Godot 4 设计的“工业母机”级 AI 游戏开发插件。它打破了传统 AI 只会写代码的局限，实现了从“点子沟通”到“引擎资产自动化生成”的全链路闭环。
 
 📂 项目结构 (Monorepo)
@@ -19,12 +23,14 @@ GameCraft-AI-Suite/
 └── .gitignore              # 工业级 Git 忽略规则 (保护 API Key)
 ✨ 核心特性
 1. 💬 共创讨论室 (Co-creation Workshop)
-不再是单向的指令，而是与 AI 主策划 像微信聊天一样讨论游戏设定。支持上下文记忆，AI 会主动反问并引导你完善世界观。
+非单向指令：与 AI 主策划 像聊天一样讨论游戏设定。
+
+上下文记忆：支持多轮对话，AI 会主动反问并引导你完善世界观。
 
 2. 🧠 三智能体协作管线 (Agent Pipeline)
-当你敲定创意后，系统会启动三方会审：
+当你敲定创意后，系统会启动“三方会审”：
 
-主策划 (Creator)：整理对话记录，形成草案。
+主策划 (Creator)：整理对话记录，形成初步草案。
 
 逻辑杠精 (Critic)：进行数值推演，修补机制漏洞。
 
@@ -57,5 +63,3 @@ GameCraft-AI-Suite/
 [ ] 行为逻辑合成：根据 JSON 里的机制说明，自动编写按钮点击后的逻辑代码。
 
 [ ] 一键 Git 备份：在插件内直接集成 Git 提交功能。
-
-"让 AI 成为你的游戏副驾，而非外包。" —— 由 MrJiuying 与 Gemini 联手打造。
