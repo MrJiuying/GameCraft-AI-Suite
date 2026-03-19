@@ -1,0 +1,49 @@
+--- 敏感配置文件 (极其重要) ---
+
+保护你的 DeepSeek API Key 不被上传
+
+config.json
+config.example.json
+*.env
+
+--- Python 后端 ---
+
+pycache/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+
+--- Godot 引擎 ---
+
+忽略 Godot 自动生成的导入数据和缓存
+
+.godot/
+*.import
+export_presets.cfg
+
+如果你不希望导出的二进制文件被追踪
+
+*.exe
+
+*.pck
+
+--- 编辑器与系统 ---
+
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+--- 临时文件与日志 ---
+
+*.log
+backend/output_godot/
+godot_plugin/output/
