@@ -1,96 +1,55 @@
 {
-	"CoreSystems": [
+	"Background": "遭遇战_野外",
+	"Dialogues": [
 		{
-			"Components": [
-				{
-					"ComponentName": "资源管理",
-					"Description": "管理灵石、气血、丹药库存的消耗与获取"
-				},
-				{
-					"ComponentName": "炼丹逻辑",
-					"Description": "处理强行炼丹的消耗、成功率判定、气血扣除与丹药产出"
-				}
-			],
-			"SystemName": "炼丹系统"
+			"Emotion": "Angry",
+			"OnShow": {
+				"怒气值": "+10"
+			},
+			"Speaker": "苏星梦",
+			"Text": "真是个笨蛋！"
 		},
 		{
-			"Components": [
-				{
-					"ComponentName": "状态显示",
-					"Description": "实时更新并显示灵石、气血、丹药数量标签与气血进度条"
-				},
-				{
-					"ComponentName": "按钮交互",
-					"Description": "处理强行炼丹按钮的点击，根据灵石与气血条件启用/禁用并显示提示"
-				}
-			],
-			"SystemName": "UI系统"
+			"OnShow": {
+				"苏星梦_灵力": "-30%"
+			},
+			"Speaker": "系统",
+			"Text": "苏星梦进入掩护状态，为你生成了临时护盾。"
+		},
+		{
+			"IsChoice": true,
+			"OnSelect": {
+				"NextDialogue": "沉默",
+				"苏星梦_辅助效果": "-20%"
+			},
+			"Speaker": "主角",
+			"Text": "多管闲事"
+		},
+		{
+			"IsChoice": true,
+			"OnSelect": {
+				"NextDialogue": "感谢",
+				"全队_气血恢复速度": "+15%",
+				"持续": "60秒",
+				"激活天赋": "心软"
+			},
+			"Speaker": "主角",
+			"Text": "多谢"
+		},
+		{
+			"Emotion": "Sad",
+			"Speaker": "苏星梦",
+			"Tag": "沉默",
+			"Text": "……（沉默不语）"
+		},
+		{
+			"Emotion": "Tsundere",
+			"Speaker": "苏星梦",
+			"Tag": "感谢",
+			"Text": "哼，下次可没这么好运了。"
 		}
 	],
-	"GameName": "炼丹模拟器",
-	"RequiredUI": [
-		{
-			"BindVariable": "SpiritStone",
-			"NodeName": "SpiritStoneLabel",
-			"NodeType": "Label",
-			"OnClick": {
-
-			},
-			"Text": "灵石: 100"
-		},
-		{
-			"BindVariable": "Health",
-			"NodeName": "HealthLabel",
-			"NodeType": "Label",
-			"OnClick": {
-
-			},
-			"Text": "气血: 100"
-		},
-		{
-			"BindVariable": "CommonPill",
-			"NodeName": "CommonPillLabel",
-			"NodeType": "Label",
-			"OnClick": {
-
-			},
-			"Text": "普通丹药: 0"
-		},
-		{
-			"BindVariable": "PremiumPill",
-			"NodeName": "PremiumPillLabel",
-			"NodeType": "Label",
-			"OnClick": {
-
-			},
-			"Text": "极品丹药: 0"
-		},
-		{
-			"BindVariable": "Health",
-			"NodeName": "HealthBar",
-			"NodeType": "ProgressBar",
-			"OnClick": {
-
-			},
-			"Text": "气血值"
-		},
-		{
-			"BindVariable": "",
-			"NodeName": "AlchemyButton",
-			"NodeType": "Button",
-			"OnClick": {
-				"CommonPill": "+1",
-				"Health": "-30%",
-				"PremiumPill": "+1",
-				"SpiritStone": "-20"
-			},
-			"Text": "强行炼丹"
-		}
-	],
-	"RequiredVariables": {
-		"CommonPill": 0.0,
-		"Health": 100.0,
-		"PremiumPill": 0.0,
-		"SpiritStone": 100.0
-	}
+	"GameMode": "VisualNovel",
+	"GameName": "月影仙途",
+	"NextScene": "TextRPG"
 }

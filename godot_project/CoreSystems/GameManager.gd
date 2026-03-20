@@ -1,28 +1,26 @@
 extends Node2D
 
-# 🤖 AI V2.2 自动生成脚本
+# 🎭 AI V3.0 视觉小说系统
 
-var CommonPill = 0.0
-var Health = 100.0
-var PremiumPill = 0.0
-var SpiritStone = 100.0
+var dialogues = [{"Emotion":"Angry","OnShow":{"怒气值":"+10"},"Speaker":"苏星梦","Text":"真是个笨蛋！"},{"OnShow":{"苏星梦_灵力":"-30%"},"Speaker":"系统","Text":"苏星梦进入掩护状态，为你生成了临时护盾。"},{"IsChoice":true,"OnSelect":{"NextDialogue":"沉默","苏星梦_辅助效果":"-20%"},"Speaker":"主角","Text":"多管闲事"},{"IsChoice":true,"OnSelect":{"NextDialogue":"感谢","全队_气血恢复速度":"+15%","持续":"60秒","激活天赋":"心软"},"Speaker":"主角","Text":"多谢"},{"Emotion":"Sad","Speaker":"苏星梦","Tag":"沉默","Text":"……（沉默不语）"},{"Emotion":"Tsundere","Speaker":"苏星梦","Tag":"感谢","Text":"哼，下次可没这么好运了。"}]
+var current_idx = 0
 
-@onready var ui_layout = $UILayer/UILayout
+@onready var name_label = $UILayer/VBox/NameLabel
+@onready var text_label = $UILayer/VBox/TextLabel
 
 func _ready():
-	print("✅ 炼丹模拟器 V2.2 场景已加载！")
-	ui_layout.get_node("AlchemyButton").pressed.connect(_on_AlchemyButton_pressed)
+	$UILayer/VBox/NextBtn.pressed.connect(_on_next_pressed)
+	_show_dialogue()
 
-func _process(delta):
-	ui_layout.get_node("SpiritStoneLabel").text = "灵石: 100: " + str(SpiritStone)
-	ui_layout.get_node("HealthLabel").text = "气血: 100: " + str(Health)
-	ui_layout.get_node("CommonPillLabel").text = "普通丹药: 0: " + str(CommonPill)
-	ui_layout.get_node("PremiumPillLabel").text = "极品丹药: 0: " + str(PremiumPill)
-	ui_layout.get_node("HealthBar").value = Health
+func _show_dialogue():
+	if current_idx < dialogues.size():
+		var d = dialogues[current_idx]
+		name_label.text = "【" + str(d.get("Speaker", "")) + "】"
+		text_label.text = str(d.get("Text", ""))
+	else:
+		name_label.text = "【系统】"
+		text_label.text = "剧情结束，等待下一步指示。"
 
-func _on_AlchemyButton_pressed():
-	print("触发动作: AlchemyButton")
-	CommonPill += (+1)
-	Health += (-30)
-	PremiumPill += (+1)
-	SpiritStone += (-20)
+func _on_next_pressed():
+	current_idx += 1
+	_show_dialogue()

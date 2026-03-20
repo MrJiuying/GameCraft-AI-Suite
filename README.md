@@ -1,69 +1,58 @@
-# 🛠️ GameCraft AI Suite 
-> **Version:** `V0.0.1-Alpha`  
-> **"让 AI 成为你的游戏副驾，而非外包。"** —— 由 **MrJiuying** 与 **Gemini** 联手打造。
+# **🛠️ GameCraft AI Suite**
 
-`GameCraft AI Suite` 是一款专为 **Godot 4** 设计的“工业母机”级 AI 游戏开发插件。它实现了从“点子沟通”到“引擎资产自动化生成”的全链路闭环。
+**Version:** V0.1.0-Beta
 
----
+**"让 AI 成为你的游戏副驾，而非外包。"** —— 由 **MrJiuying** 与 **Gemini** 联手打造。
 
-## 📂 项目结构 (Monorepo)
+GameCraft AI Suite 是一款专为 **Godot 4** 设计的“工业母机”级 AI 游戏开发插件。它实现了从“点子沟通”到“多品类引擎资产自动化生成”的全链路闭环。
 
-本仓库采用单体仓库结构，统一管理后端大脑与前端插件：
+## **📂 工业级项目结构**
 
-```plaintext
-GameCraft-AI-Suite/
-├── backend/                # Python 异步后端 (FastAPI)
-│   ├── main.py             # API 网关 (路由: /chat, /compile)
-│   ├── brain_test.py       # 多智能体调度引擎 (Creator/Critic/Architect)
-│   └── requirements.txt    # 后端依赖清单
-├── godot_project/          # Godot 4.x 完整开发工程
-│   ├── addons/             # GameCraft AI 核心插件
-│   ├── CoreSystems/        # AI 具现化生成的蓝图与脚本
-│   └── project.godot       # Godot 项目文件
-├── config.json             # API 供应商配置 (需填入 SiliconFlow Key)
-├── start.bat               # Windows 一键启动脚本
-└── .gitignore              # 工业级 Git 忽略规则 (保护 API Key)
-```
+本仓库采用解耦架构，确保前端表现与后端大脑的高效协同：
 
-## ✨ 核心特性
-### 1. 💬 共创讨论室 (Co-creation Workshop)
-对话式推演：与 AI 主策划 像聊天一样讨论游戏设定。
+GameCraft-AI-Suite/  
+├── backend/                \# 🧠 AI 中枢 (FastAPI)  
+│   ├── brain\_test.py       \# MCP 路由大脑 (支持多品类蓝图编译)  
+│   ├── build\_lore\_db.py    \# RAG 向量数据库构建 (基于 ChromaDB)  
+│   └── lore\_db/             \# 📔 设定记忆库 (小说世界观/角色设定)  
+├── godot\_project/          \# 🎮 Godot 4.x 开发环境  
+│   ├── addons/             \# 核心插件逻辑  
+│   ├── CoreSystems/        \# 🏗️ AI 具现化产物 (蓝图/代码/场景)  
+│   │   ├── PlayerData.gd   \# 全局单例：数值中心与状态机  
+│   │   ├── GameManager.gd  \# 动态注入的业务逻辑脚本  
+│   │   └── MainGame.tscn   \# 自动组装的路由场景  
+├── config.json             \# API 供应商配置 (支持 SiliconFlow/DeepSeek)  
+├── .gitignore              \# 🛡️ 工业级屏蔽规则 (保护 API Key 与本地缓存)  
+└── start.bat               \# Windows 一键启动脚本
 
-记忆能力：支持多轮对话，AI 会主动反问并引导你完善世界观。
+## **✨ 核心特性升级**
 
-### 2. 🧠 三智能体协作管线 (Agent Pipeline)
-系统会自动启动“三方会审”：
+### **1\. 🧠 记忆增强型共创 (RAG-Infused Workshop)**
 
-主策划 (Creator)：整理对话记录，形成初步草案。
+* **设定回响**：接入向量数据库，AI 主策划能实时调取你小说中的法宝（如“炽天使七重圆环”）与角色性格（如苏星梦的傲娇属性）。  
+* **逻辑闭环**：支持多轮对话引导，自动修补数值漏洞。
 
-逻辑杠精 (Critic)：进行数值推演，修补机制漏洞。
+### **2\. 🚦 MCP 场景路由架构 (Scene Routing)**
 
-架构总工 (Architect)：将最终共识编译为严谨的 JSON 蓝图。
+* **多品类切换**：后端大脑升级为“架构路由总工”，能自动识别需求并切换模式。  
+* **TextRPG 模式**：自动生成战斗/数值交互界面，支持前置条件判定（如“潜行值不足”拦截）。  
+* **VisualNovel 模式**：自动生成带有姓名框、对话流与立绘占位的剧情演出系统。
 
-### 3. 🧱 资产具现化 (Asset Instantiation)
-一键将 JSON 蓝图转化为 Godot 原生资产：
+### **3\. 🏗️ 资产具现化 3.0 (Asset Instantiation)**
 
-代码注入：自动生成 GameManager.gd，并将 AI 设定的变量直接写入代码。
+* **双引擎驱动**：Godot 端根据 GameMode 自动分发构建逻辑，实现“一套 JSON，多种表现”。  
+* **格式校准与清洗**：集成暴力 JSON 提取技术与正则表达式清洗，强制校准 AI 输出的非法字符，确保脚本 100% 可编译。  
+* **数据解耦**：所有生成资产均依赖 PlayerData 全局单例，实现数值与表现的彻底分离。
 
-场景组装：自动生成 MainGame.tscn 场景并挂载对应脚本。
+## **🚀 快速开始**
 
-## 🚀 快速开始
-### 1. 配置环境
-在根目录的 config.json 中填入你的 SiliconFlow API Key。
+1. **环境配置**：在 config.json 中填入你的 API Key。  
+2. **安全隔离**：确保 .gitignore 已配置，防止密钥上传至公共仓库。  
+3. **启动大脑**：运行 start.bat 开启后端服务（默认端口 8001）。  
+4. **具现蓝图**：在 Godot 插件面板进行对话，点击“敲定创意”后再点击“具现化蓝图”。
 
-### 2. 启动后端大脑
-双击根目录下的 start.bat。脚本会自动检查依赖并启动本地 8001 端口服务。
+## **🗺️ V2.0 路线图**
 
-### 3. 启动 Godot 插件
-使用 Godot 4.x 打开 godot_project 文件夹。
-
-前往 项目 -> 项目设置 -> 插件，启用 GameCraft AI Suite。
-
-在编辑器底部点击 GameCraft AI 标签页，开启共创之旅！
-
-## 🗺️ V2.0 路线图 (即将到来)
-[ ] 可视化 UI 自动生成：AI 将根据蓝图自动创建 Label、ProgressBar 等 UI 节点。
-
-[ ] 行为逻辑合成：根据机制说明自动编写按钮点击事件代码。
-
-[ ] 一键 Git 备份：在插件内直接集成 Git 提交功能。
+* \[ \] **视觉工厂**：集成 Stable Diffusion，根据剧本自动生成背景图与角色立绘。  
+* \[ \] **多模态对齐**：支持 AI 根据剧情氛围自动选择背景音乐与音效。  
+* \[ \] **逻辑深度合成**：AI 自动生成复杂的战斗演算逻辑与技能特效触发器。

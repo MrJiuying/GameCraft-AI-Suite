@@ -86,9 +86,8 @@ func _on_http_request_completed(_result, response_code, _headers, body):
 		else:
 			output_label.text = "❌ 编译失败，状态码: " + str(response_code) + "\n" + response_text
 
-# ================= 阶段三：资产具现化 (V2.0 可视化升级版) =================
+# ================= 阶段三：资产具现化 (V3.0 多引擎路由版) =================
 func _on_build_pressed():
-	# 1. 获取 JSON 数据并校验
 	var json_text = output_label.text
 	if json_text == "" or json_text.begins_with("❌") or json_text.begins_with("⚠️") or json_text.begins_with("正在"):
 		output_label.text = "⚠️ 请先成功编译蓝图！"
@@ -99,118 +98,186 @@ func _on_build_pressed():
 		output_label.text = "❌ 蓝图格式错误！"
 		return
 		
-	build_btn.text = "🧱 正在自动构建 2.0 可视化资产..."
+	build_btn.text = "🧱 正在自动构建 3.0 路由资产..."
 	build_btn.disabled = true
 	
 	var target_dir = "res://CoreSystems"
 	if not DirAccess.dir_exists_absolute(target_dir):
 		DirAccess.make_dir_absolute(target_dir)
 	
-	# 2. 保存蓝图文件
+	# 保存蓝图文件
 	var json_file = FileAccess.open(target_dir + "/blueprint.json", FileAccess.WRITE)
 	if json_file:
 		json_file.store_string(json_text)
 		json_file.close()
 
-	# ==========================================
-	# 3. 生成脚本 (GameManager.gd) - 🤖 V2.2 动态逻辑版
-	# ==========================================
-	var script_code = "extends Node2D\n\n# 🤖 AI V2.2 自动生成脚本\n\n"
-	if data.has("RequiredVariables"):
-		for v in data["RequiredVariables"].keys():
-			var safe_val = JSON.stringify(data["RequiredVariables"][v])
-			var safe_var_name = str(v).replace(" ", "_")
-			script_code += "var " + safe_var_name + " = " + safe_val + "\n"
-	
-	script_code += "\n@onready var ui_layout = $UILayer/UILayout\n"
-	
-	script_code += "\nfunc _ready():\n"
-	script_code += "\tprint(\"✅ " + str(data.get("GameName", "游戏")) + " V2.2 场景已加载！\")\n"
-	
-	if data.has("RequiredUI"):
-		for ui in data["RequiredUI"]:
-			if ui.get("NodeType") == "Button":
-				var node_name = str(ui.get("NodeName")).replace(" ", "_")
-				script_code += "\tui_layout.get_node(\"" + node_name + "\").pressed.connect(_on_" + node_name + "_pressed)\n"
-
-	script_code += "\nfunc _process(delta):\n"
-	if data.has("RequiredUI"):
-		for ui in data["RequiredUI"]:
-			var node_name = str(ui.get("NodeName")).replace(" ", "_")
-			var bind_var = str(ui.get("BindVariable", "")).replace(" ", "_")
-			if bind_var != "":
-				if ui.get("NodeType") == "Label":
-					script_code += "\tui_layout.get_node(\"" + node_name + "\").text = \"" + ui.get("Text") + ": \" + str(" + bind_var + ")\n"
-				elif ui.get("NodeType") == "ProgressBar":
-					script_code += "\tui_layout.get_node(\"" + node_name + "\").value = " + bind_var + "\n"
-
-	# --- ⚠️ 核心修复区：确保按钮点击逻辑只生成一次 ---
-	if data.has("RequiredUI"):
-		for ui in data["RequiredUI"]:
-			if ui.get("NodeType") == "Button":
-				var node_name = str(ui.get("NodeName")).replace(" ", "_")
-				script_code += "\nfunc _on_" + node_name + "_pressed():\n"
-				script_code += "\tprint(\"触发动作: " + node_name + "\")\n"
-				
-				# 读取 AI 动态生成的 OnClick 字典
-				if ui.has("OnClick") and typeof(ui["OnClick"]) == TYPE_DICTIONARY:
-					var clicks = ui["OnClick"]
-					for var_name in clicks.keys():
-						var safe_var = str(var_name).replace(" ", "_")
-						var change_val = str(clicks[var_name]).replace("%", "")
-						script_code += "\t" + safe_var + " += (" + change_val + ")\n"
-				else:
-					script_code += "\tpass # AI 未配置数值逻辑\n"
-	
-	# 保存生成的 GameManager.gd
+	# 🌟 核心升级：场景路由中枢 (Scene Router)
+	var game_mode = data.get("GameMode", "TextRPG")
 	var gd_file_path = target_dir + "/GameManager.gd"
+	var tscn_path = target_dir + "/MainGame.tscn"
+	var script_code = ""
+	var tscn_code = ""
+
+	if game_mode == "VisualNovel":
+		print("🎭 路由判定：生成视觉小说模式...")
+		# --- 1. 生成 Visual Novel 的代码 ---
+		script_code = "extends Node2D\n\n# 🎭 AI V3.0 视觉小说系统\n\n"
+		script_code += "var dialogues = " + JSON.stringify(data.get("Dialogues", [])) + "\n"
+		script_code += "var current_idx = 0\n\n"
+		script_code += "@onready var name_label = $UILayer/VBox/NameLabel\n"
+		script_code += "@onready var text_label = $UILayer/VBox/TextLabel\n\n"
+		script_code += "func _ready():\n"
+		script_code += "\t$UILayer/VBox/NextBtn.pressed.connect(_on_next_pressed)\n"
+		script_code += "\t_show_dialogue()\n\n"
+		script_code += "func _show_dialogue():\n"
+		script_code += "\tif current_idx < dialogues.size():\n"
+		script_code += "\t\tvar d = dialogues[current_idx]\n"
+		script_code += "\t\tname_label.text = \"【\" + str(d.get(\"Speaker\", \"\")) + \"】\"\n"
+		script_code += "\t\ttext_label.text = str(d.get(\"Text\", \"\"))\n"
+		script_code += "\telse:\n"
+		script_code += "\t\tname_label.text = \"【系统】\"\n"
+		script_code += "\t\ttext_label.text = \"剧情结束，等待下一步指示。\"\n\n"
+		script_code += "func _on_next_pressed():\n"
+		script_code += "\tcurrent_idx += 1\n"
+		script_code += "\t_show_dialogue()\n"
+		
+		# --- 2. 生成 Visual Novel 的 UI ---
+		tscn_code = "[gd_scene load_steps=2 format=3]\n\n"
+		tscn_code += "[ext_resource type=\"Script\" path=\"" + gd_file_path + "\" id=\"1_script\"]\n\n"
+		tscn_code += "[node name=\"MainGame\" type=\"Node2D\"]\n"
+		tscn_code += "script = ExtResource(\"1_script\")\n\n"
+		tscn_code += "[node name=\"UILayer\" type=\"CanvasLayer\" parent=\".\"]\n\n"
+		# 对话框容器 (放置在屏幕下方)
+		tscn_code += "[node name=\"VBox\" type=\"VBoxContainer\" parent=\"UILayer\"]\n"
+		tscn_code += "offset_left = 50.0\n"
+		tscn_code += "offset_top = 400.0\n"
+		tscn_code += "offset_right = 750.0\n"
+		tscn_code += "offset_bottom = 550.0\n"
+		tscn_code += "theme_override_constants/separation = 10\n\n"
+		tscn_code += "[node name=\"NameLabel\" type=\"Label\" parent=\"UILayer/VBox\"]\n"
+		tscn_code += "layout_mode = 2\n"
+		tscn_code += "theme_override_colors/font_color = Color(0.9, 0.7, 0.2, 1)\n"
+		tscn_code += "theme_override_font_sizes/font_size = 24\n\n"
+		tscn_code += "[node name=\"TextLabel\" type=\"Label\" parent=\"UILayer/VBox\"]\n"
+		tscn_code += "custom_minimum_size = Vector2(700, 80)\n"
+		tscn_code += "layout_mode = 2\n"
+		tscn_code += "theme_override_font_sizes/font_size = 20\n"
+		tscn_code += "autowrap_mode = 3\n\n"
+		tscn_code += "[node name=\"NextBtn\" type=\"Button\" parent=\"UILayer/VBox\"]\n"
+		tscn_code += "layout_mode = 2\n"
+		tscn_code += "text = \"继续 >>\"\n"
+		
+	else:
+		print("⚔️ 路由判定：生成数值/战斗模式...")
+		# --- 1. 生成 TextRPG 的代码 (修复了空函数 Bug) ---
+		script_code = "extends Node2D\n\n# ⚔️ AI V2.2 自动生成脚本\n\n"
+		script_code += "@onready var ui_layout = $UILayer/UILayout\n"
+		script_code += "\nfunc _ready():\n"
+		script_code += "\tprint(\"✅ 战斗场景已加载！\")\n"
+		if data.has("RequiredUI"):
+			for ui in data["RequiredUI"]:
+				if ui.get("NodeType") == "Button":
+					var node_name = str(ui.get("NodeName")).replace(" ", "_")
+					script_code += "\tui_layout.get_node(\"" + node_name + "\").pressed.connect(_on_" + node_name + "_pressed)\n"
+
+		script_code += "\nfunc _process(delta):\n"
+		script_code += "\tpass\n" # 👈 防报错神针：永远加个pass垫底！
+		if data.has("RequiredUI"):
+			for ui in data["RequiredUI"]:
+				var node_name = str(ui.get("NodeName")).replace(" ", "_")
+				var bind_var = str(ui.get("BindVariable", ""))
+				if bind_var != "":
+					if ui.get("NodeType") == "Label":
+						script_code += "\tui_layout.get_node(\"" + node_name + "\").text = \"" + ui.get("Text") + ": \" + str(PlayerData.get_property(\"" + bind_var + "\"))\n"
+					elif ui.get("NodeType") == "ProgressBar":
+						script_code += "\tui_layout.get_node(\"" + node_name + "\").value = PlayerData.get_property(\"" + bind_var + "\")\n"
+
+		if data.has("RequiredUI"):
+			for ui in data["RequiredUI"]:
+				if ui.get("NodeType") == "Button":
+					var node_name = str(ui.get("NodeName")).replace(" ", "_")
+					script_code += "\nfunc _on_" + node_name + "_pressed():\n"
+					script_code += "\tprint(\"\\n--- 尝试触发动作: " + node_name + " ---\")\n"
+					var success_msg = ui.get("SuccessMessage", "【系统】：操作成功。")
+					var fail_msg = ui.get("FailMessage", "【系统】：条件不足，操作失败。")
+					var has_conditions = false
+					var if_statement = "" 
+					
+					if ui.has("Requires") and typeof(ui["Requires"]) == TYPE_DICTIONARY:
+						var reqs = ui["Requires"]
+						var condition_arr = []
+						for req_var in reqs.keys():
+							var req_val = str(reqs[req_var]).replace("%", "")
+							condition_arr.append("PlayerData.get_property(\"" + str(req_var) + "\") " + req_val)
+						if condition_arr.size() > 0:
+							has_conditions = true
+							if_statement = " and ".join(condition_arr)
+					
+					if has_conditions:
+						script_code += "\tif " + if_statement + ":\n"
+						script_code += "\t\tui_layout.get_node(\"DialogueLabel\").text = \"" + success_msg + "\"\n"
+					else:
+						script_code += "\tif true:\n"
+						script_code += "\t\tui_layout.get_node(\"DialogueLabel\").text = \"" + success_msg + "\"\n"
+						
+					if ui.has("OnClick") and typeof(ui["OnClick"]) == TYPE_DICTIONARY:
+						var clicks = ui["OnClick"]
+						for var_name in clicks.keys():
+							var regex = RegEx.new()
+							regex.compile("[^0-9\\.\\-\\+]")
+							var clean_val = regex.sub(str(clicks[var_name]), "", true)
+							if clean_val == "" or clean_val == "-" or clean_val == "+": clean_val = "0"
+							script_code += "\t\tPlayerData.change_property(\"" + str(var_name) + "\", " + clean_val + ")\n"
+					else:
+						script_code += "\t\tpass\n"
+						
+					if has_conditions:
+						script_code += "\telse:\n"
+						script_code += "\t\tui_layout.get_node(\"DialogueLabel\").text = \"" + fail_msg + "\"\n"
+		
+		# --- 2. 生成 TextRPG 的 UI ---
+		tscn_code = "[gd_scene load_steps=2 format=3]\n\n"
+		tscn_code += "[ext_resource type=\"Script\" path=\"" + gd_file_path + "\" id=\"1_script\"]\n\n"
+		tscn_code += "[node name=\"MainGame\" type=\"Node2D\"]\n"
+		tscn_code += "script = ExtResource(\"1_script\")\n\n"
+		tscn_code += "[node name=\"UILayer\" type=\"CanvasLayer\" parent=\".\"]\n\n"
+		tscn_code += "[node name=\"UILayout\" type=\"VBoxContainer\" parent=\"UILayer\"]\n"
+		tscn_code += "offset_left = 30.0\n"
+		tscn_code += "offset_top = 30.0\n"
+		tscn_code += "offset_right = 350.0\n"
+		tscn_code += "offset_bottom = 500.0\n"
+		tscn_code += "theme_override_constants/separation = 15\n\n"
+		tscn_code += "[node name=\"DialogueLabel\" type=\"Label\" parent=\"UILayer/UILayout\"]\n"
+		tscn_code += "custom_minimum_size = Vector2(300, 20)\n"
+		tscn_code += "layout_mode = 2\n"
+		tscn_code += "theme_override_colors/font_color = Color(0.95, 0.8, 0.3, 1)\n"
+		tscn_code += "text = \"【系统提示】...\"\n"
+		tscn_code += "autowrap_mode = 3\n\n"
+		if data.has("RequiredUI"):
+			for ui_info in data["RequiredUI"]:
+				var node_name = str(ui_info.get("NodeName", "Node")).replace(" ", "_").replace("-", "_")
+				var node_type = ui_info.get("NodeType", "Label")
+				tscn_code += "[node name=\"" + node_name + "\" type=\"" + node_type + "\" parent=\"UILayer/UILayout\"]\n"
+				tscn_code += "layout_mode = 2\n"
+				if node_type == "Label" or node_type == "Button":
+					tscn_code += "text = \"" + ui_info.get("Text", "") + "\"\n"
+				elif node_type == "ProgressBar":
+					tscn_code += "value = 100.0\n"
+				tscn_code += "\n"
+
+	# 统一写入文件
 	var gd_file = FileAccess.open(gd_file_path, FileAccess.WRITE)
 	gd_file.store_string(script_code)
 	gd_file.close()
-
-	# 4. 生成场景并自动拼装 UI (V2.0 核心逻辑)
-	var tscn_path = target_dir + "/MainGame.tscn"
-	var tscn_code = "[gd_scene load_steps=2 format=3]\n\n"
-	tscn_code += "[ext_resource type=\"Script\" path=\"" + gd_file_path + "\" id=\"1_script\"]\n\n"
-	tscn_code += "[node name=\"MainGame\" type=\"Node2D\"]\n"
-	tscn_code += "script = ExtResource(\"1_script\")\n\n"
-	
-	# 自动创建 UI 画布层
-	tscn_code += "[node name=\"UILayer\" type=\"CanvasLayer\" parent=\".\"]\n\n"
-	
-	# 自动创建垂直排版容器
-	tscn_code += "[node name=\"UILayout\" type=\"VBoxContainer\" parent=\"UILayer\"]\n"
-	tscn_code += "offset_left = 30.0\n"
-	tscn_code += "offset_top = 30.0\n"
-	tscn_code += "offset_right = 350.0\n"
-	tscn_code += "offset_bottom = 500.0\n"
-	tscn_code += "theme_override_constants/separation = 15\n\n"
-	
-	# 动态解析蓝图中的 UI 需求并生成控件
-	if data.has("RequiredUI"):
-		for ui_info in data["RequiredUI"]:
-			var node_name = str(ui_info.get("NodeName", "Node")).replace(" ", "_").replace("-", "_")
-			var node_type = ui_info.get("NodeType", "Label")
-			var text = ui_info.get("Text", "")
-			
-			tscn_code += "[node name=\"" + node_name + "\" type=\"" + node_type + "\" parent=\"UILayer/UILayout\"]\n"
-			tscn_code += "layout_mode = 2\n"
-			
-			if node_type == "Label" or node_type == "Button":
-				tscn_code += "text = \"" + text + "\"\n"
-			elif node_type == "ProgressBar":
-				tscn_code += "value = 100.0\n"
-			tscn_code += "\n"
 	
 	var tscn_file = FileAccess.open(tscn_path, FileAccess.WRITE)
 	tscn_file.store_string(tscn_code)
 	tscn_file.close()
 	
-	# 刷新编辑器文件系统
 	if Engine.is_editor_hint():
 		EditorInterface.get_resource_filesystem().scan()
 	
-	output_label.text = "🎉 V2.0 具现化完成！请双击 MainGame.tscn 查看效果！"
+	output_label.text = "🎉 V3.0 多引擎具现化完成！当前模式: " + game_mode
 	build_btn.text = "✨ 具现化蓝图 (自动生成脚本与节点)"
 	build_btn.disabled = false
 	

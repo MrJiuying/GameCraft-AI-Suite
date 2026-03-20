@@ -14,6 +14,10 @@ config/name="GameCraft-Test"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+PlayerData="*uid://bcnfodqcrf1no"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gamecraft_suite/plugin.cfg")
